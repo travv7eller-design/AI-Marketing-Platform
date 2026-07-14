@@ -1,0 +1,117 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100vh;
+
+    font-family: 'Montserrat', sans-serif;
+    
+}
+
+.poster {
+    width: 540px;
+    aspect-ratio: 4 / 5;
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    position: relative;
+    overflow: hidden;
+
+}
+
+.overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-start;
+
+    align-items: center;
+
+    padding-top: 90px;
+
+    padding-left: 80px;
+    padding-right: 80px;
+
+    text-align: center;
+
+    z-index: 10;
+}
+
+.company {
+
+    font-size: 24px;
+
+    font-weight: 600;
+
+    letter-spacing: 6px;
+
+    color: white;
+
+    text-transform: uppercase;
+
+    margin-bottom: 40px;
+}
+
+.headline {
+
+    font-size: 72px;
+
+    font-weight: bold;
+
+    color: white;
+
+    line-height: 1.1;
+
+    max-width: 850px;
+
+    margin-bottom: 30px;
+    
+    font-family: 'Playfair Display', serif;
+
+    font-size:72px;
+
+    font-weight:600;
+}
+
+.tagline {
+
+    font-size: 28px;
+
+    color: rgba(255,255,255,.9);
+
+    max-width: 700px;
+
+    line-height: 1.6;
+}
+
+.poster::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.45) 0%,
+        rgba(0,0,0,0.20) 30%,
+        rgba(0,0,0,0.00) 60%
+    );
+
+    z-index: 1;
+}
