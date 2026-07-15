@@ -1,7 +1,7 @@
 /* ==========================================================
    AI Marketing Platform
    Version 1.5
-   Sprint 1.1 - Typography Foundation
+   Sprint 1.2 - Premium Typography
    ========================================================== */
 
 /* =========================
@@ -17,37 +17,42 @@
 
     /* Typography */
 
-    --company-size: 24px;
-    --headline-size: 72px;
-    --tagline-size: 28px;
+    --company-size: 20px;
+    --headline-size: 76px;
+    --tagline-size: 24px;
 
-    --company-weight: 600;
-    --headline-weight: 600;
+    --company-weight: 500;
+    --headline-weight: 700;
     --tagline-weight: 400;
 
-    --company-spacing: 6px;
+    --company-spacing: 8px;
+    --headline-letter-spacing: -1px;
 
-    --headline-line-height: 1.1;
-    --tagline-line-height: 1.6;
+    --headline-line-height: 1.05;
+    --tagline-line-height: 1.7;
 
     /* Colors */
 
     --text-primary: #FFFFFF;
     --text-secondary: rgba(255,255,255,.92);
 
+    /* Shadows */
+
+    --text-shadow: 0 2px 12px rgba(0,0,0,.35);
+
     /* Spacing */
 
     --space-xxl: 90px;
-    --space-xl: 40px;
-    --space-lg: 30px;
+    --space-xl: 56px;
+    --space-lg: 40px;
 
     --padding-horizontal: 80px;
 
     /* Overlay */
 
-    --overlay-top: rgba(0,0,0,.45);
-    --overlay-middle: rgba(0,0,0,.20);
-    --overlay-bottom: rgba(0,0,0,0);
+    --overlay-top: rgba(0,0,0,.50);
+    --overlay-middle: rgba(0,0,0,.25);
+    --overlay-bottom: rgba(0,0,0,.05);
 
 }
 
@@ -101,13 +106,10 @@ body {
     inset: 0;
 
     background: linear-gradient(
-
         to bottom,
-
         var(--overlay-top) 0%,
         var(--overlay-middle) 30%,
         var(--overlay-bottom) 60%
-
     );
 
     z-index: 1;
@@ -126,8 +128,8 @@ body {
     display: flex;
     flex-direction: column;
 
-    align-items: center;
     justify-content: flex-start;
+    align-items: center;
 
     text-align: center;
 
@@ -152,9 +154,13 @@ body {
 
     letter-spacing: var(--company-spacing);
 
+    text-transform: uppercase;
+
     color: var(--text-primary);
 
-    text-transform: uppercase;
+    opacity: .95;
+
+    text-shadow: var(--text-shadow);
 
     margin-bottom: var(--space-xl);
 
@@ -171,9 +177,13 @@ body {
     font-size: var(--headline-size);
     font-weight: var(--headline-weight);
 
+    letter-spacing: var(--headline-letter-spacing);
+
     line-height: var(--headline-line-height);
 
     color: var(--text-primary);
+
+    text-shadow: var(--text-shadow);
 
     max-width: 850px;
 
@@ -196,6 +206,8 @@ body {
 
     color: var(--text-secondary);
 
-    max-width: 700px;
+    text-shadow: var(--text-shadow);
+
+    max-width: 520px;
 
 }
