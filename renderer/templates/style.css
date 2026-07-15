@@ -1,117 +1,201 @@
+/* ==========================================================
+   AI Marketing Platform
+   Version 1.5
+   Sprint 1.1 - Typography Foundation
+   ========================================================== */
+
+/* =========================
+   Design Tokens
+   ========================= */
+
+   :root {
+
+    /* Fonts */
+
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Montserrat', sans-serif;
+
+    /* Typography */
+
+    --company-size: 24px;
+    --headline-size: 72px;
+    --tagline-size: 28px;
+
+    --company-weight: 600;
+    --headline-weight: 600;
+    --tagline-weight: 400;
+
+    --company-spacing: 6px;
+
+    --headline-line-height: 1.1;
+    --tagline-line-height: 1.6;
+
+    /* Colors */
+
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255,255,255,.92);
+
+    /* Spacing */
+
+    --space-xxl: 90px;
+    --space-xl: 40px;
+    --space-lg: 30px;
+
+    --padding-horizontal: 80px;
+
+    /* Overlay */
+
+    --overlay-top: rgba(0,0,0,.45);
+    --overlay-middle: rgba(0,0,0,.20);
+    --overlay-bottom: rgba(0,0,0,0);
+
+}
+
+/* =========================
+   Global Reset
+   ========================= */
+
 * {
+
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+
 }
 
 body {
-    
+
     display: flex;
     justify-content: center;
     align-items: center;
 
     min-height: 100vh;
 
-    font-family: 'Montserrat', sans-serif;
-    
+    font-family: var(--font-body);
+
 }
 
+/* =========================
+   Poster
+   ========================= */
+
 .poster {
+
     width: 540px;
     aspect-ratio: 4 / 5;
+
+    position: relative;
+    overflow: hidden;
 
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 
-    position: relative;
-    overflow: hidden;
-
-}
-
-.overlay {
-
-    position: absolute;
-
-    inset: 0;
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: flex-start;
-
-    align-items: center;
-
-    padding-top: 90px;
-
-    padding-left: 80px;
-    padding-right: 80px;
-
-    text-align: center;
-
-    z-index: 10;
-}
-
-.company {
-
-    font-size: 24px;
-
-    font-weight: 600;
-
-    letter-spacing: 6px;
-
-    color: white;
-
-    text-transform: uppercase;
-
-    margin-bottom: 40px;
-}
-
-.headline {
-
-    font-size: 72px;
-
-    font-weight: bold;
-
-    color: white;
-
-    line-height: 1.1;
-
-    max-width: 850px;
-
-    margin-bottom: 30px;
-    
-    font-family: 'Playfair Display', serif;
-
-    font-size:72px;
-
-    font-weight:600;
-}
-
-.tagline {
-
-    font-size: 28px;
-
-    color: rgba(255,255,255,.9);
-
-    max-width: 700px;
-
-    line-height: 1.6;
 }
 
 .poster::before {
+
     content: "";
 
     position: absolute;
     inset: 0;
 
     background: linear-gradient(
+
         to bottom,
-        rgba(0,0,0,0.45) 0%,
-        rgba(0,0,0,0.20) 30%,
-        rgba(0,0,0,0.00) 60%
+
+        var(--overlay-top) 0%,
+        var(--overlay-middle) 30%,
+        var(--overlay-bottom) 60%
+
     );
 
     z-index: 1;
+
+}
+
+/* =========================
+   Content Overlay
+   ========================= */
+
+.overlay {
+
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    text-align: center;
+
+    padding-top: var(--space-xxl);
+    padding-left: var(--padding-horizontal);
+    padding-right: var(--padding-horizontal);
+
+    z-index: 10;
+
+}
+
+/* =========================
+   Company
+   ========================= */
+
+.company {
+
+    font-family: var(--font-body);
+
+    font-size: var(--company-size);
+    font-weight: var(--company-weight);
+
+    letter-spacing: var(--company-spacing);
+
+    color: var(--text-primary);
+
+    text-transform: uppercase;
+
+    margin-bottom: var(--space-xl);
+
+}
+
+/* =========================
+   Headline
+   ========================= */
+
+.headline {
+
+    font-family: var(--font-display);
+
+    font-size: var(--headline-size);
+    font-weight: var(--headline-weight);
+
+    line-height: var(--headline-line-height);
+
+    color: var(--text-primary);
+
+    max-width: 850px;
+
+    margin-bottom: var(--space-lg);
+
+}
+
+/* =========================
+   Tagline
+   ========================= */
+
+.tagline {
+
+    font-family: var(--font-body);
+
+    font-size: var(--tagline-size);
+    font-weight: var(--tagline-weight);
+
+    line-height: var(--tagline-line-height);
+
+    color: var(--text-secondary);
+
+    max-width: 700px;
+
 }
