@@ -3484,4 +3484,180 @@ That history now becomes the foundation upon which every future version of the A
 >
 > *It was to build the right foundation."*
 
+# Sprint 1 – Multi-Client Architecture Milestone
 
+**Date:** 2026-07-16
+
+## Objective
+
+Transform the renderer pipeline from a single hardcoded client workflow into a scalable multi-client marketing platform while preserving the renderer as a generic rendering engine.
+
+---
+
+## Work Completed
+
+### Multi-Client Client Registry
+
+- Introduced Google Sheets as the Client Registry.
+- Replaced hardcoded client information with external client configuration.
+- Added support for multiple client profiles.
+- Standardized client metadata.
+
+Implemented fields:
+
+- ClientID
+- CompanyName
+- Industry
+- BrandTone
+- CampaignMode
+- TelegramChatID
+- Active
+- AutoGenerate
+
+---
+
+### Eligibility Filtering
+
+Implemented client eligibility filtering before campaign generation.
+
+Rules:
+
+- Active = true
+- AutoGenerate = true
+
+Only eligible clients continue through the workflow.
+
+This prevents unnecessary LLM and image generation calls.
+
+---
+
+### Campaign Architecture
+
+Integrated the Client Registry with the existing Calendar workflow.
+
+Current execution order:
+
+Trigger
+→ Client Registry
+→ Eligibility Filter
+→ Calendar
+→ Campaign Selection
+→ Gemini
+→ Renderer
+
+Campaign routing remains independent of client selection.
+
+---
+
+### Creative Brief Redesign
+
+Redesigned the Creative Brief as the communication contract between the workflow and the renderer.
+
+New schema includes:
+
+- client_id
+- company
+- industry
+- campaign_type
+- event_name
+- brand_tone
+- headline
+- tagline
+- creative_direction
+- design_style
+- flux_prompt
+
+The Creative Brief now acts as the Single Source of Truth for rendering.
+
+---
+
+### Renderer Updates
+
+Updated renderer to consume the new Creative Brief schema.
+
+Removed remaining hardcoded company values.
+
+Renderer now reads:
+
+- company
+- headline
+- tagline
+
+directly from the Creative Brief.
+
+---
+
+### Prompt Builder Removal
+
+Removed the Prompt Builder from the workflow.
+
+Reason:
+
+Gemini now generates the final Flux prompt directly.
+
+The renderer consumes the Creative Brief without intermediate transformations.
+
+Workflow became simpler while reducing maintenance complexity.
+
+---
+
+### Hugging Face Integration
+
+Replaced manual HTTP requests with the official Hugging Face JavaScript SDK.
+
+Benefits:
+
+- Automatic provider selection
+- Official API support
+- Reduced maintenance
+- Cleaner implementation
+- Better compatibility with future provider updates
+
+---
+
+## Validation
+
+Successfully validated:
+
+- Google Sheets Client Registry
+- Client eligibility filtering
+- Calendar integration
+- Gemini prompt generation
+- Creative Brief generation
+- Renderer integration
+- Dynamic poster generation for a client
+- Official Hugging Face SDK integration
+
+---
+
+## Known Limitation
+
+Multi-client execution could not be fully validated because the Hugging Face account exhausted its included inference credits.
+
+Observed response:
+
+HTTP 402 — Payment Required
+
+This is an external service limitation.
+
+The workflow architecture remains valid.
+
+No engineering changes are currently required.
+
+---
+
+## Lessons Learned
+
+1. External services should always be isolated behind dedicated modules.
+
+2. The official SDK is preferred over manually constructed HTTP requests whenever available.
+
+3. The Creative Brief successfully evolved into the Single Source of Truth for the rendering pipeline.
+
+4. Removing unnecessary transformation layers (Prompt Builder) simplified the overall architecture without reducing functionality.
+
+---
+
+## Next Sprint
+
+Resume multi-client validation after configuring an alternative inference provider (Replicate or Fal AI) or replenishing Hugging Face inference credits.
