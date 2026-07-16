@@ -1,6 +1,11 @@
 require("dotenv").config();
+
 const fs = require("fs");
 const path = require("path");
+const { InferenceClient } = require("@huggingface/inference");
+
+const client = new InferenceClient(process.env.HF_API_KEY);
+
 async function main() {
 
     const creativeBriefPath = path.join(
@@ -13,36 +18,17 @@ async function main() {
     );
 
     const fluxPrompt = creativeBrief.flux_prompt;
-    console.log(Object.keys(creativeBrief));
-    console.log("Prompt exists:", !!creativeBrief.flux_prompt);
-    console.log("[INFO] Flux prompt loaded.");
 
-    const response = await fetch(
-        "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell",
-        {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${process.env.HF_API_KEY}`,
-                "Content-Type": "application/json",
-                Accept: "image/png"
-            },
-            body: JSON.stringify({
-                inputs: fluxPrompt
-            })
-        }
-    );
-    console.log(process.env.HF_API_KEY?.substring(0, 6));
+    console.log("[INFO] Creative Brief loaded.");
+    console.log("[INFO] Generating background...");
 
-    if (!response.ok) {
-        const errorBody = await response.text();
-    
-        console.error("Status:", response.status);
-        console.error("Response:", errorBody);
-    
-        throw new Error("Hugging Face request failed.");
-    }
+    const image = await client.textToImage({
+        model: "black-forest-labs/FLUX.1-schnell",
+        inputs: fluxPrompt,
+    });
 
-    const buffer = Buffer.from(await response.arrayBuffer());
+    const arrayBuffer = await image.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
     const outputPath = path.join(
         __dirname,
@@ -54,4 +40,7 @@ async function main() {
     console.log("[INFO] Background saved successfully.");
 }
 
-main().catch(console.error);
+main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+});

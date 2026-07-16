@@ -40,13 +40,14 @@ async function main() {
     });
     console.log(creativeBrief);
     await page.evaluate((data) => {
-        document.getElementById("company").innerText = "Sri Krishna Tiles"; // Temporary
+        document.getElementById("company").innerText =
+        data.company;
 
-        document.getElementById("headline").innerText =
-            data.marketing.headline;
-        
-        document.getElementById("tagline").innerText =
-            data.marketing.tagline;
+    document.getElementById("headline").innerText =
+        data.headline;
+
+    document.getElementById("tagline").innerText =
+        data.tagline;
         
         const poster = document.getElementById("poster");
         
