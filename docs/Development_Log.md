@@ -200,3 +200,79 @@ This is an external service limitation and does not impact the correctness of th
 ## Impact
 
 This commit marks the transition from a single-client renderer to a scalable multi-client marketing platform capable of serving multiple businesses through a unified workflow.
+
+# Renderer Architecture Refactor (Request-Isolated Rendering)
+
+## Objective
+Refactor the renderer to eliminate shared-state dependencies and make the rendering pipeline safe for concurrent request processing.
+
+## Changes Implemented
+
+### Workspace-Based Rendering
+- Introduced a dedicated workspace for every rendering request.
+- Each request now creates a unique job directory using a UUID.
+- All request-specific assets are stored inside the workspace.
+
+Workspace Structure:
+jobs/
+└── <job-id>/
+    ├── creative-brief.json
+    ├── background.png
+    └── poster.png
+
+### Workspace Service
+Created `services/workspace.js`.
+
+Responsibilities:
+- Generate unique Job IDs.
+- Create workspace directories.
+- Provide standardized paths for renderer assets.
+- Return a workspace object shared across the rendering pipeline.
+
+### Background Generator Refactor
+Refactored `generateBackground.js` to:
+- Read the creative brief from the request workspace.
+- Save generated background images inside the workspace.
+- Remove dependency on shared directories.
+
+### Renderer Refactor
+Refactored `render.js` to:
+- Consume workspace paths instead of static directories.
+- Read workspace-specific assets.
+- Generate posters inside the request workspace.
+- Improve browser cleanup using `finally`.
+
+### Server Pipeline
+Simplified request lifecycle:
+
+Request
+→ Create Workspace
+→ Save Creative Brief
+→ Generate Background
+→ Render Poster
+→ Return Poster
+
+The server now functions as the orchestration layer for the rendering pipeline.
+
+### Cleanup Strategy
+Removed request-coupled cleanup.
+
+Implemented `services/cleanupScheduler.js` to:
+- Periodically scan expired workspaces.
+- Delete old job directories asynchronously.
+- Decouple cleanup from the HTTP request lifecycle.
+
+## Architectural Improvements
+- Request Isolation
+- Modular Service Architecture
+- Explicit Service Contracts
+- Reduced Module Coupling
+- Concurrent Request Safety
+- Cleaner Pipeline Orchestration
+
+## Current Status
+✅ Request-isolated rendering implemented.
+
+✅ Scheduler-based cleanup operational.
+
+✅ Renderer architecture ready for integration testing.

@@ -596,3 +596,265 @@ The repository follows the following engineering principles:
 > This Engineering Reference should evolve alongside the project.
 >
 > Whenever a new component is introduced or an existing responsibility changes, this document must be updated accordingly.
+
+# Renderer v2 Engineering Reference
+
+## Architecture Decision
+
+### Decision
+Adopt a request-isolated workspace architecture for the rendering pipeline.
+
+### Problem
+The previous renderer relied on shared directories for intermediate assets.
+
+Shared resources included:
+- creative-brief.json
+- background.png
+- poster.png
+
+This architecture introduced:
+- Race conditions
+- File collisions
+- Unsafe concurrent execution
+- Tight coupling between requests
+
+### Solution
+Each rendering request owns an independent workspace.
+
+Workspace Layout
+
+jobs/
+└── <job-id>/
+    ├── creative-brief.json
+    ├── background.png
+    └── poster.png
+
+No files are shared between concurrent requests.
+
+---
+
+# Module Responsibilities
+
+## server.js
+
+Responsibility:
+- Accept HTTP requests.
+- Create request workspace.
+- Coordinate rendering pipeline.
+- Return rendered poster.
+
+The server acts only as the pipeline orchestrator.
+
+---
+
+## workspace.js
+
+Responsibility:
+- Generate unique Job IDs.
+- Create workspace directories.
+- Return workspace metadata.
+
+Contract
+
+Input:
+None
+
+Output:
+Workspace Object
+
+---
+
+## generateBackground.js
+
+Responsibility:
+- Read creative brief.
+- Generate AI background.
+- Save background into workspace.
+
+Contract
+
+Input:
+Workspace
+
+Output:
+background.png
+
+---
+
+## render.js
+
+Responsibility:
+- Load HTML template.
+- Inject creative content.
+- Use workspace assets.
+- Generate poster.
+
+Contract
+
+Input:
+Workspace
+
+Output:
+poster.png
+
+---
+
+## cleanupScheduler.js
+
+Responsibility:
+- Scan workspace directory.
+- Remove expired workspaces.
+- Execute cleanup independently of requests.
+
+Reason:
+Cleanup should not depend on HTTP response completion because response lifecycle events are not reliable for filesystem maintenance.
+
+---
+
+# Rendering Pipeline
+
+HTTP Request
+
+↓
+
+Create Workspace
+
+↓
+
+Save creative-brief.json
+
+↓
+
+Generate background.png
+
+↓
+
+Render poster.png
+
+↓
+
+Return HTTP Response
+
+↓
+
+Scheduled Cleanup
+
+---
+
+# Engineering Principles Applied
+
+## Request Isolation
+
+Each rendering request owns its complete set of resources.
+
+Benefits:
+- No file collisions
+- Safe concurrent execution
+- Easier debugging
+- Better scalability
+
+---
+
+## Single Responsibility Principle
+
+Each module performs one well-defined responsibility.
+
+Examples:
+- Workspace creation
+- Background generation
+- Poster rendering
+- Cleanup scheduling
+
+---
+
+## Explicit Contracts
+
+Each service defines:
+- Required inputs
+- Expected outputs
+
+This reduces coupling between modules and allows implementation changes without affecting the overall pipeline.
+
+---
+
+## Data Flow
+
+creative-brief.json
+
+↓
+
+background.png
+
+↓
+
+poster.png
+
+Each stage consumes the output of the previous stage.
+
+---
+
+## Control Flow
+
+server.js
+
+↓
+
+workspace.js
+
+↓
+
+generateBackground()
+
+↓
+
+renderPoster()
+
+↓
+
+HTTP Response
+
+The server controls the execution order while individual modules perform isolated responsibilities.
+
+---
+
+# Scalability Outcome
+
+Previous Architecture
+
+Shared Resources
+→ Single Rendering Context
+
+Current Architecture
+
+Independent Request Workspaces
+→ Independent Rendering Pipelines
+
+The renderer is now architecturally prepared for future enhancements including:
+- Worker queues
+- Background job processing
+- Multiple rendering workers
+- Horizontal scaling
+# Core Architectural Concepts
+
+## Responsibility
+Each module owns a single, clearly defined responsibility.
+
+## Contract
+Every service exposes a well-defined input and output contract, allowing implementations to evolve without breaking dependent modules.
+
+## Dependency
+Modules depend only on the information required to perform their responsibility, reducing unnecessary coupling.
+
+## Data Flow
+Data moves through the rendering pipeline in the following order:
+
+creative-brief.json
+→ background.png
+→ poster.png
+
+## Control Flow
+Execution is orchestrated by `server.js`, which invokes each service in sequence and coordinates the overall request lifecycle.
+
+## Workspace Isolation
+Every request operates within its own workspace, ensuring complete isolation of intermediate assets and enabling safe concurrent execution.
+
