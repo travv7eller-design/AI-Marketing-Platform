@@ -1,24 +1,28 @@
+const startCleanupScheduler =require("./services/cleanupScheduler");
 require("dotenv").config();
 const express = require("express");
-const { exec } = require("child_process");
+const generateBackground = require("./scripts/generateBackground");
+const renderPoster = require("./scripts/render");
 const fs = require("fs");
 const path = require("path");
 const app = express();
+const { createWorkspace } = require("./services/workspace");
+
+
 
 app.use(express.json({ limit: "20mb" }));
 
-app.post("/render", (req, res) => {
+app.post("/render", async (req, res) => {
+    const workspace = createWorkspace();
+
+    console.log("[WORKSPACE]", workspace);
 
     try {
 
         // -----------------------------
         // Save Creative Brief directly
         // -----------------------------
-        const creativeBriefPath = path.join(
-            __dirname,
-            "input",
-            "creative-brief.json"
-        );
+        const creativeBriefPath = workspace.creativeBriefPath;
 
         fs.writeFileSync(
             creativeBriefPath,
@@ -28,6 +32,14 @@ app.post("/render", (req, res) => {
 
         console.log("[INFO] Creative Brief saved.");
 
+        await generateBackground(workspace);
+    
+        await renderPoster(workspace);
+    
+        console.log("[INFO] Poster generated.");
+        return res.sendFile(workspace.posterPath);
+        
+        
     } catch (err) {
 
         console.error(err);
@@ -38,57 +50,9 @@ app.post("/render", (req, res) => {
     // -----------------------------
     // Generate Background
     // -----------------------------
-    exec(
-        "node scripts/generateBackground.js",
-        {
-            cwd: __dirname,
-            env: process.env
-        },
-        (err, stdout, stderr) => {
-
-            if (stdout) console.log(stdout);
-            if (stderr) console.error(stderr);
-
-            if (err) {
-                return res.status(500).send(stderr || err.message);
-            }
-
-            // -----------------------------
-            // Render Poster
-            // -----------------------------
-            exec(
-                "node scripts/render.js",
-                {
-                    cwd: __dirname,
-                    env: process.env
-                },
-                (err, stdout, stderr) => {
-
-                    if (stdout) console.log(stdout);
-                    if (stderr) console.error(stderr);
-
-                    if (err) {
-                        return res.status(500).send(stderr || err.message);
-                    }
-
-                    console.log("[INFO] Poster generated.");
-
-                    const posterPath = path.join(
-                        __dirname,
-                        "output",
-                        "poster.png"
-                    );
-                    
-                    res.sendFile(posterPath);
-
-                }
-            );
-
-        }
-    );
 
 });
-
+startCleanupScheduler();
 app.listen(4000, () => {
 
     console.log("======================================");
